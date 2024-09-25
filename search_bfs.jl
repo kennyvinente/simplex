@@ -40,7 +40,7 @@ function search_BFS(c::Vector, A::Matrix, b::Vector)
             println("\t x_B = ", round.(x_B, digits=5))
             println("\t Non-negative? ", is_nonnegative(x_B))
             if is_nonnegative(x_B)
-                println("\t Obj = ", dot(c_B, x_B))
+                println("\t Obj = ", round(dot(c_B, x_B), digits=5))
             end
 
         catch e
