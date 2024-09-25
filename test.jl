@@ -1,8 +1,26 @@
+
+## ex. from book Julia Programming for Operations Research
 c = [-3; -2; -1; -5; 0; 0; 0]
 A = [7 3 4 1 1 0 0 ;
      2 1 1 5 0 1 0 ;
      1 4 5 2 0 0 1 ]
 b = [7; 3; 8]
+
+## ex. from prof. Fabio D'Andreagiovanni
+c = [-3; -2; -3; 0; 0; 0]
+A = [2 1 1 1 0 0 ;
+     1 2 3 0 1 0 ;
+     2 2 1 0 0 1 ]
+b = [2; 5; 6]
+
+## ex. from prof. David P. Williamson
+c = [-1; 2; -1; 0; 0; 0; 0]
+A = [1 0 0 1 0 0 0 ;
+     0 1 0 0 1 0 0 ;
+     1 1 0 0 0 1 0; 
+     -1 0 2 0 0 0 1]
+b = [4; 4; 6; 4]
+
 
 c = Array{Float64}(c)
 A = Array{Float64}(A)
