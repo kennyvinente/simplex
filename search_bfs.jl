@@ -1,38 +1,57 @@
 using LinearAlgebra, Combinatorics
 
+# Auxiliary function to check if a vector is non-negative
 function is_nonnegative(x::Vector)
-  return length( x[ x .< 0] ) == 0
+    return all(x .>= 0)
 end
 
-function search_BFS(c, A, b)
-  m, n = size(A)
-  @assert rank(A) == m
+# Function to find all Basic Feasible Solutions
+function search_BFS(c::Vector, A::Matrix, b::Vector)
+    m, n = size(A)
+    
+    # Pre-condition: Matrix A must have full rank
+    @assert rank(A) == m "Matrix A does not have full rank."
 
-  opt_x = zeros(n)
-  obj = Inf
+    opt_x = zeros(n)  # Optimal solution
+    obj = Inf         # Optimal objective value
 
-  for b_idx in combinations(1:n, m)
-    B = A[:, b_idx]
-    c_B = c[b_idx]
-    x_B = inv(B) * b
+    # Iterate over all combinations of columns of A that form a basis
+    for b_idx in combinations(1:n, m)
+        try
+            # Construct the basis matrix B and the cost vector c_B
+            B = A[:, b_idx]
+            c_B = c[b_idx]
+            
+            # Compute the basic solution associated with the basis
+            x_B = inv(B) * b
 
-    if is_nonnegative(x_B)
-      z = dot(c_B, x_B)
-      if z < obj
-        obj = z
-        opt_x = zeros(n)
-        opt_x[b_idx] = x_B
-      end
+            # Check if the basic solution is non-negative
+            if is_nonnegative(x_B)
+                z = dot(c_B, x_B)
+                if z < obj
+                    obj = z
+                    opt_x = zeros(n)
+                    opt_x[b_idx] = x_B
+                end
+            end
+
+            # Print debug information (can be removed in production)
+            println("Basis:", b_idx)
+            println("\t x_B = ", round.(x_B, digits=5))
+            println("\t Non-negative? ", is_nonnegative(x_B))
+            if is_nonnegative(x_B)
+                println("\t Obj = ", round(dot(c_B, x_B), digits=5))
+            end
+
+        catch e
+            # Handle singular matrix exceptions
+            if isa(e, SingularException) || isa(e, LAPACKException)
+                println("SingularException: Basis ", b_idx, " is non-invertible. Skipping this basis.")
+            else
+                rethrow(e)
+            end
+        end
     end
 
-    println("Basis:", b_idx)
-    println("\t x_B = ", x_B)
-    println("\t nonnegative? ", is_nonnegative(x_B))
-    if is_nonnegative(x_B)
-      println("\t obj = ", dot(c_B, x_B))
-    end
-
-  end
-
-  return opt_x, obj
+    return opt_x, obj
 end
